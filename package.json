@@ -6,15 +6,89 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
     "check-types": "turbo run check-types"
   },
   "devDependencies": {
-    "prettier": "^3.5.3",
+    "@repo/eslint-config": "workspace:*",
+    "commitizen": "^4.3.1",
+    "cz-emoji": "1.3.2-canary.2",
+    "husky": "^9.1.7",
     "turbo": "^2.5.2",
     "typescript": "5.8.2"
   },
   "packageManager": "pnpm@9.0.0",
   "engines": {
     "node": ">=18"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-emoji"
+    },
+    "cz-emoji": {
+      "skipScope": true,
+      "scopes": [
+        "args",
+        "docs",
+        "repo"
+      ],
+      "types": [
+        {
+          "emoji": "✅",
+          "code": ":white_check_mark: feat:",
+          "description": "a new functionality",
+          "name": "feat"
+        },
+        {
+          "emoji": "🐞",
+          "code": ":lady_beetle: fix:",
+          "description": "a bug fix",
+          "name": "fix"
+        },
+        {
+          "emoji": "🔧",
+          "code": ":wrench: update:",
+          "description": "a code change that neither fixes a bug nor adds a feature",
+          "name": "update"
+        },
+        {
+          "emoji": "📚",
+          "code": ":books: docs:",
+          "description": "documentations",
+          "name": "docs"
+        },
+        {
+          "emoji": "🧪",
+          "code": ":test_tube: tests:",
+          "description": "tests",
+          "name": "tests"
+        },
+        {
+          "emoji": "🪛",
+          "code": ":screwdriver: config:",
+          "description": "configuration files",
+          "name": "config"
+        },
+        {
+          "emoji": "🤖",
+          "code": ":robot: devops:",
+          "description": "ci/cd or other form of automation",
+          "name": "devops"
+        },
+        {
+          "emoji": "♻️",
+          "code": ":recycle: cleanup:",
+          "description": "code cleanup",
+          "name": "cleanup"
+        },
+        {
+          "emoji": "📦",
+          "code": ":package: release:",
+          "description": "new release bundle",
+          "name": "release"
+        }
+      ]
+    }
   }
 }
