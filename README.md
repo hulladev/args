@@ -1,84 +1,94 @@
-# Turborepo starter
+# 🚀 @hulla/args
 
-This Turborepo starter is maintained by the Turborepo core team.
+A modern, type-safe, and powerful command-line argument parser for Node.js.
 
-## Using this example
+`@hulla/args` provides a declarative API to define your CLI's arguments and commands, with strong TypeScript support to catch errors at compile time and provide a great developer experience with autocompletion.
 
-Run the following command:
+## ✨ Features
 
-```sh
-npx create-turbo@latest
+- 🛡️ **Type-Safe**: Written in TypeScript for complete type safety.
+- 💧 **Declarative API**: A clean and declarative API for defining arguments and commands.
+- ✅ **Validation**: Built-in support for `zod` for powerful schema validation.
+- 📦 **Sub-commands**: Support for nested commands.
+- 📌 **Argument Types**: Handles flags, options, positionals, and sequences.
+- 🆘 **Auto-generated Help**: (Coming soon) Automatic help message generation.
+
+## 📦 Installation
+
+You can install `@hulla/args` using your favorite package manager:
+
+```bash
+# pnpm
+pnpm add @hulla/args
+
+# npm
+npm install @hulla/args
+
+# yarn
+yarn add @hulla/args
 ```
 
-## What's inside?
+## 🚀 Quick Start
 
-This Turborepo includes the following packages/apps:
+Here's a simple example of how to define and parse command-line arguments.
 
-### Apps and Packages
+```typescript
+// cli.ts
+import { parser, positional, flag, option } from '@hulla/args';
+import { z } from 'zod';
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+const cli = parser({
+  name: 'my-app',
+  arguments: [
+    positional({
+      name: 'name',
+      description: 'The name to greet.',
+      schema: z.string().default('World'),
+    }),
+    option({
+      name: 'greeting',
+      description: 'The greeting to use.',
+      short: 'g',
+      schema: z.string().default('Hello'),
+    }),
+    flag({
+      name: 'yell',
+      description: 'Print the greeting in uppercase.',
+      short: 'y',
+      schema: z.boolean().default(false),
+    }),
+  ],
+}).parse();
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+const { name, greeting, yell } = cli.arguments;
+let message = `${greeting.value}, ${name.value}!`;
 
-### Utilities
+if (yell.value) {
+  message = message.toUpperCase();
+}
 
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-pnpm build
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-pnpm dev
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
+console.log(message);
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+You can run this CLI from your terminal:
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+```bash
+# Basic usage
+$ ts-node cli.ts Alice
+# Output: Hello, Alice!
 
+# Using an option and a flag
+$ ts-node cli.ts Bob -g Hi -y
+# Output: HI, BOB!
+
+# Using the default value
+$ ts-node cli.ts
+# Output: Hello, World!
 ```
-npx turbo link
-```
 
-## Useful Links
+## 📚 Documentation
 
-Learn more about the power of Turborepo:
+For more detailed information and advanced usage, please visit the official documentation at **[hulla.dev/docs/args](https://hulla.dev/docs/args)**.
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+---
+
