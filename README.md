@@ -26,6 +26,9 @@ npm install @hulla/args
 
 # yarn
 yarn add @hulla/args
+
+# bun
+bun add @hulla/args
 ```
 
 ## 🚀 Quick Start
@@ -36,6 +39,7 @@ Here's a simple example of how to define and parse command-line arguments.
 // cli.ts
 import { parser, positional, flag, option } from '@hulla/args';
 import { z } from 'zod';
+import { argv } from 'node:process' // can use node/deno/bun or even custom input
 
 const cli = parser({
   name: 'my-app',
@@ -48,17 +52,15 @@ const cli = parser({
     option({
       name: 'greeting',
       description: 'The greeting to use.',
-      short: 'g',
       schema: z.string().default('Hello'),
     }),
     flag({
       name: 'yell',
       description: 'Print the greeting in uppercase.',
       short: 'y',
-      schema: z.boolean().default(false),
     }),
   ],
-}).parse();
+}).parse(argv);
 
 const { name, greeting, yell } = cli.arguments;
 let message = `${greeting.value}, ${name.value}!`;
@@ -78,7 +80,7 @@ $ ts-node cli.ts Alice
 # Output: Hello, Alice!
 
 # Using an option and a flag
-$ ts-node cli.ts Bob -g Hi -y
+$ ts-node cli.ts Bob --greeting=Hi -y
 # Output: HI, BOB!
 
 # Using the default value
