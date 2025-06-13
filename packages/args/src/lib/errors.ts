@@ -1,12 +1,12 @@
 import type { ZodIssueCode } from "zod"
 
-type Code =
+export type Code =
   | ZodIssueCode
   | "missing_required_argument"
   | "ambiguous_arguments"
   | "banned_combined_arguments"
 
-type ParserErrorConstructor = {
+export type ParserErrorConstructor = {
   parser: string
   message: string
   from: "parser" | "zod" | "runtime"
