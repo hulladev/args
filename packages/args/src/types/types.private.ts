@@ -34,7 +34,7 @@ export type FindArg<
     commands?: readonly BareCommand[]
   },
   N extends C["arguments"][number]["name"] | StringKey<keyof C["commands"]>,
-> = C["arguments"][number] extends Argument<N, infer AT, infer Z> ? Argument<N, AT, Z> : never
+> = Extract<C["arguments"][number], { name: N }>
 
 export type ReadyParserConfig<
   C extends ParserConfig | BareCommand,

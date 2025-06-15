@@ -1,4 +1,4 @@
-import type { output, ZodArray, ZodTypeAny } from "zod"
+import type { output, ZodArray, ZodString, ZodTypeAny } from "zod"
 import type {
   BareCommand,
   FindArg,
@@ -63,10 +63,8 @@ export type Sequence<
 export type InfiniteSequence<N extends string> = Argument<
   N,
   "infiniteSequence",
-  ZodArray<ZodTypeAny>
-> & {
-  schema: ZodArray<ZodTypeAny>
-}
+  ZodArray<ZodString>
+>
 
 export type Command<
   N extends string,
