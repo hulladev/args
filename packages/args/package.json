@@ -1,6 +1,6 @@
 {
   "name": "@hulla/args",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": {
     "name": "Samuel Hulla",
     "email": "hulla@hulla.dev",
@@ -46,6 +46,6 @@
     "vitest": "^3.1.2"
   },
   "peerDependencies": {
-    "zod": "3.23"
+    "zod": ">=3.0.0"
   }
 }

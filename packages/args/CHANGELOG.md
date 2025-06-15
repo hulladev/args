@@ -1,5 +1,11 @@
 # @hulla/args
 
+## 0.0.2
+
+### Patch Changes
+
+- Adjust zod compatibility to >=3
+
 ## 0.0.1
 
 ### Patch Changes
