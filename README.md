@@ -1,6 +1,6 @@
 # 🚀 @hulla/args
 
-A modern, type-safe, and powerful command-line argument parser for all JS Runtimes (Node.js, Bun, Deno, Edge, ...)
+A modern, type-safe, and powerful command-line argument parser for all JS Runtimes (Node.js, Bun, Deno, etc...)
 
 `@hulla/args` provides a declarative API to define your CLI's arguments and commands, with strong TypeScript support to catch errors at compile time and provide a great developer experience with autocompletion.
 
