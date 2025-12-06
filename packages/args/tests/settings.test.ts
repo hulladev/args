@@ -328,7 +328,9 @@ describe("merge args", () => {
     const p = parser({
       name: "test",
       arguments: [flag({ name: "help" })],
-      commands: [command({ name: "build", arguments: [flag({ name: "help" }), flag({ name: "watch" })] })],
+      commands: [
+        command({ name: "build", arguments: [flag({ name: "help" }), flag({ name: "watch" })] }),
+      ],
       settings: {
         mergeArgs: true,
       },
@@ -364,7 +366,9 @@ describe("merge args", () => {
     const p = parser({
       name: "test",
       arguments: [flag({ name: "help" }), flag({ name: "verbose" })],
-      commands: [command({ name: "build", arguments: [flag({ name: "help" }), flag({ name: "verbose" })] })],
+      commands: [
+        command({ name: "build", arguments: [flag({ name: "help" }), flag({ name: "verbose" })] }),
+      ],
       settings: {
         mergeArgs: true,
       },
@@ -382,5 +386,178 @@ describe("merge args", () => {
     expect(result.commands.build.arguments.help.index).toBe(0)
     expect(result.commands.build.arguments.verbose.detected).toBe(true)
     expect(result.commands.build.arguments.verbose.index).toBe(1)
+  })
+})
+
+describe("Shared dash", () => {
+  test("should expand combined flags when sharedDash is enabled", () => {
+    const p = parser({
+      name: "test",
+      arguments: [flag({ name: "help" }), flag({ name: "version" })],
+      settings: {
+        sharedDash: true,
+      },
+    })
+
+    const result = p.parse(["-hv"])
+    expect(result.arguments.help.value).toBe(true)
+    expect(result.arguments.version.value).toBe(true)
+  })
+
+  test("should handle combined flags with custom shorts", () => {
+    const p = parser({
+      name: "test",
+      arguments: [flag({ name: "help", short: "h" }), flag({ name: "version", short: "v" })],
+      settings: {
+        sharedDash: true,
+      },
+    })
+
+    const result = p.parse(["-hv"])
+    expect(result.arguments.help.value).toBe(true)
+    expect(result.arguments.version.value).toBe(true)
+  })
+
+  test("should handle combined options with positional values", () => {
+    const p = parser({
+      name: "test",
+      arguments: [option({ name: "input", short: "i" }), option({ name: "output", short: "o" })],
+      settings: {
+        sharedDash: true,
+      },
+    })
+
+    const result = p.parse(["-io", "input.txt", "output.txt"])
+    expect(result.arguments.input.value).toBe("input.txt")
+    expect(result.arguments.output.value).toBe("output.txt")
+  })
+
+  test("should handle combined flags and options together", () => {
+    const p = parser({
+      name: "test",
+      arguments: [
+        flag({ name: "help", short: "h" }),
+        option({ name: "input", short: "i" }),
+        option({ name: "output", short: "o" }),
+      ],
+      settings: {
+        sharedDash: true,
+      },
+    })
+
+    const result = p.parse(["-hio", "input.txt", "output.txt"])
+    expect(result.arguments.help.value).toBe(true)
+    expect(result.arguments.input.value).toBe("input.txt")
+    expect(result.arguments.output.value).toBe("output.txt")
+    const result2 = p.parse(["-ioh", "input.txt", "output.txt"])
+    expect(result2.arguments.help.value).toBe(true)
+    expect(result2.arguments.input.value).toBe("input.txt")
+    expect(result2.arguments.output.value).toBe("output.txt")
+  })
+
+  test("should respect option order in combined dash", () => {
+    const p = parser({
+      name: "test",
+      arguments: [option({ name: "input", short: "i" }), option({ name: "output", short: "o" })],
+      settings: {
+        sharedDash: true,
+      },
+    })
+
+    const result = p.parse(["-oi", "output.txt", "input.txt"])
+    expect(result.arguments.output.value).toBe("output.txt")
+    expect(result.arguments.input.value).toBe("input.txt")
+  })
+
+  test("should throw error for multi-character shorts when sharedDash is enabled", () => {
+    expect(() => {
+      parser({
+        name: "test",
+        arguments: [flag({ name: "help", short: "hp" })],
+        settings: {
+          sharedDash: true,
+        },
+      })
+    }).toThrow(/sharedDash requires all short names to be single characters/)
+  })
+
+  test("should throw error when using equals syntax with combined options", () => {
+    const p = parser({
+      name: "test",
+      arguments: [option({ name: "input", short: "i" }), option({ name: "output", short: "o" })],
+      settings: {
+        sharedDash: true,
+      },
+    })
+
+    // -io=value is not a valid shared dash pattern (contains =)
+    // so it will be treated as unhandled argument
+    expect(() => {
+      p.parse(["-io=value"])
+    }).toThrow(/Unhandled argument/)
+  })
+
+  test("should work with case sensitivity disabled", () => {
+    const p = parser({
+      name: "test",
+      arguments: [flag({ name: "help" }), flag({ name: "version" })],
+      settings: {
+        sharedDash: true,
+        caseSensitive: false,
+      },
+    })
+
+    const result = p.parse(["-HV"])
+    expect(result.arguments.help.value).toBe(true)
+    expect(result.arguments.version.value).toBe(true)
+  })
+
+  test("should not expand when sharedDash is disabled", () => {
+    const p = parser({
+      name: "test",
+      arguments: [flag({ name: "help" }), flag({ name: "version" })],
+      settings: {
+        sharedDash: false,
+      },
+    })
+
+    // When sharedDash is disabled, -hv is not a valid argument and should throw
+    expect(() => {
+      p.parse(["-hv"])
+    }).toThrow(/Unhandled argument/)
+  })
+
+  test("should handle multiple combined patterns", () => {
+    const p = parser({
+      name: "test",
+      arguments: [
+        flag({ name: "help", short: "h" }),
+        flag({ name: "version", short: "v" }),
+        flag({ name: "verbose", short: "V" }),
+      ],
+      settings: {
+        sharedDash: true,
+        caseSensitive: true,
+      },
+    })
+
+    const result = p.parse(["-hv", "-V"])
+    expect(result.arguments.help.value).toBe(true)
+    expect(result.arguments.version.value).toBe(true)
+    expect(result.arguments.verbose.value).toBe(true)
+  })
+
+  test("should work with long names not affected", () => {
+    const p = parser({
+      name: "test",
+      arguments: [flag({ name: "help" }), flag({ name: "version" })],
+      settings: {
+        sharedDash: true,
+      },
+    })
+
+    const result = p.parse(["--help", "--version"])
+    expect(result.arguments.help.value).toBe(true)
+    expect(result.arguments.version.value).toBe(true)
   })
 })

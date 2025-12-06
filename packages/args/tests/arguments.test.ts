@@ -23,6 +23,7 @@ describe("basic parser", () => {
       mode: "both",
       keepOnlyDetected: false,
       mergeArgs: false,
+      sharedDash: false,
     })
   })
   test("read", () => {
