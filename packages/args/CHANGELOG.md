@@ -1,5 +1,11 @@
 # @hulla/args
 
+## 0.0.3
+
+### Patch Changes
+
+- mergeArgs setting
+
 ## 0.0.2
 
 ### Patch Changes
