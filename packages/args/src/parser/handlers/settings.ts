@@ -8,6 +8,7 @@ export function initSettings<C extends ParserConfig>(config: C): ParserSettings 
     requireEquals: config.settings?.requireEquals ?? false,
     mode: config.settings?.mode ?? "both",
     keepOnlyDetected: config.settings?.keepOnlyDetected ?? false,
+    mergeArgs: config.settings?.mergeArgs ?? false,
   }
 
   return settings

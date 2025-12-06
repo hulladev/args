@@ -100,8 +100,10 @@ export function createParse<const C extends ParserConfig>(
     const commandArgvStart = foundCommand ? foundCommand.index + 1 : parsedArgv.length
 
     // Create argv slices for parser and command
-    const parserArgv = parsedArgv.slice(0, parserArgvEnd)
-    const parserRawArgv = rawArgv.slice(0, parserArgvEnd)
+    // When mergeArgs is enabled, parser can see the entire argv (including args before commands)
+    // This allows shared arguments to be detected at both parser and command levels
+    const parserArgv = settings.mergeArgs ? parsedArgv : parsedArgv.slice(0, parserArgvEnd)
+    const parserRawArgv = settings.mergeArgs ? rawArgv : rawArgv.slice(0, parserArgvEnd)
     // const commandArgv = foundCommand ? parsedArgv.slice(commandArgvStart) : []
     const commandRawArgv = foundCommand ? rawArgv.slice(commandArgvStart) : []
 
@@ -111,6 +113,14 @@ export function createParse<const C extends ParserConfig>(
     const positionalsAndSequences =
       args?.filter((arg) => arg.type === "positional" || arg.type === "sequence") || []
     const infiniteSequences = args?.filter((arg) => arg.type === "infiniteSequence") || []
+
+    // Calculate search start index for commands when mergeArgs is enabled
+    // Commands should search from after their name first
+    let searchStartIndex = 0
+    if (type === "command" && settings.mergeArgs) {
+      const commandNameIndex = parsedArgv.indexOf(name)
+      searchStartIndex = commandNameIndex >= 0 ? commandNameIndex + 1 : 0
+    }
 
     // Process flags and options (can appear anywhere)
     const flagAndOptionResults: Record<
@@ -126,6 +136,7 @@ export function createParse<const C extends ParserConfig>(
         settings,
         path,
         baseOffset,
+        searchStartIndex,
       })
       result.consumedIndices.forEach((index) => consumedIndices.add(index))
       const { consumedIndices: _, ...resultWithoutConsumedIndices } = result
@@ -197,13 +208,16 @@ export function createParse<const C extends ParserConfig>(
           commands: command.commands || [],
         } as ReadyParserConfig<BareCommand, "command">
 
-        // Calculate the offset for the command's argv slice
-        const commandOffset = baseOffset + commandArgvStart
+        // When mergeArgs is enabled, pass the full argv to the command so it can detect
+        // arguments that appear before the command name
+        // Otherwise, only pass arguments after the command name
+        const commandArgvToPass = settings.mergeArgs ? rawArgv : commandRawArgv
+        const commandOffset = settings.mergeArgs ? baseOffset : baseOffset + commandArgvStart
 
-        const commandParser = createParse(commandConfig, () => commandRawArgv, commandOffset)
+        const commandParser = createParse(commandConfig, () => commandArgvToPass, commandOffset)
 
         // Parse the command arguments recursively
-        const commandResult = commandParser(commandRawArgv)
+        const commandResult = commandParser(commandArgvToPass)
 
         return {
           ...acc,
@@ -228,10 +242,29 @@ export function createParse<const C extends ParserConfig>(
     }, {}) || {}
 
     // Check for unhandled arguments
-    const expectedArgvLength = parserArgv.length
-    if (consumedIndices.size < expectedArgvLength) {
+    // When mergeArgs is enabled:
+    // - For parser type: only check up to the command boundary
+    // - For command type: only check arguments after the command name
+    // This ensures that shared arguments before the command don't trigger errors
+    let startCheckIndex = 0
+    let endCheckIndex = parserArgv.length
+
+    if (settings.mergeArgs) {
+      if (type === "parser") {
+        // Parser checks from start to command boundary
+        endCheckIndex = parserArgvEnd
+      } else if (type === "command") {
+        // Command checks from after its name to end
+        // Find where this command name appears
+        const commandNameIndex = parsedArgv.indexOf(name)
+        startCheckIndex = commandNameIndex >= 0 ? commandNameIndex + 1 : 0
+        endCheckIndex = parsedArgv.length
+      }
+    }
+
+    if (consumedIndices.size < endCheckIndex - startCheckIndex) {
       const unhandledIndices: number[] = []
-      for (let i = 0; i < expectedArgvLength; i++) {
+      for (let i = startCheckIndex; i < endCheckIndex; i++) {
         if (!consumedIndices.has(i)) {
           unhandledIndices.push(i)
         }

@@ -14,8 +14,33 @@ export function parseOption<C extends MergedConfig, A extends Option<string, Zod
   consumedIndices,
   path,
   baseOffset = 0,
+  searchStartIndex = 0,
 }: ValueParams<A>): ArgHandlerOutput<ArgOutput<C, A["name"]>> {
-  const index = search({ settings, parsedArgv, commandOrArgument: arg, parser: path })
+  // When mergeArgs is enabled and searchStartIndex is provided,
+  // first search from searchStartIndex onwards, then search before if not found
+  let index = search({
+    settings,
+    parsedArgv,
+    commandOrArgument: arg,
+    parser: path,
+    startIndex: searchStartIndex,
+  })
+
+  // If not found and searchStartIndex > 0, search from the beginning (for mergeArgs)
+  if (index === -1 && searchStartIndex > 0 && settings.mergeArgs) {
+    index = search({
+      settings,
+      parsedArgv,
+      commandOrArgument: arg,
+      parser: path,
+      startIndex: 0,
+    })
+    // Make sure we don't find something at or after searchStartIndex
+    // (which would have been found in the first search)
+    if (index >= searchStartIndex) {
+      index = -1
+    }
+  }
 
   if (index === -1) {
     return {

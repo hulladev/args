@@ -89,6 +89,7 @@ export type ParserSettingsInit = {
   requireEquals?: boolean
   mode?: "both" | "long" | "short"
   keepOnlyDetected?: boolean
+  mergeArgs?: boolean
 }
 
 export type ParserSettings = {
