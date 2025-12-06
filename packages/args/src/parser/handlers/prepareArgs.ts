@@ -55,6 +55,19 @@ export function prepareArgs<C extends ParserConfig>(config: C): NonNullable<C["a
         typedArg.short ??
         (config.settings?.caseSensitive ? arg.name[0]! : arg.name[0]!.toLowerCase())
 
+      // Validate short name length if sharedDash is enabled
+      if (config.settings?.sharedDash && short.length > 1) {
+        throw new ParserError({
+          message: `sharedDash requires all short names to be single characters. Found '${short}' with length ${short.length}`,
+          code: "ambiguous_arguments",
+          parser: config.name,
+          from: "parser",
+          argvIndex: -1,
+          argumentName: arg.name,
+          path: [config.name],
+        })
+      }
+
       // @ts-expect-error Not all arguments have a short key
       if (mapKey(args, "short").includes(short)) {
         throw new ParserError({

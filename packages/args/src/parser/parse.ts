@@ -1,4 +1,5 @@
 import { ParserError } from "@/lib/errors"
+import { containsOptions, expandSharedDash, isSharedDashPattern } from "@/lib/sharedDash"
 import { parseArg } from "@/parser/methods/parseArg"
 import type {
   AnyArgOutput,
@@ -62,13 +63,41 @@ export function createParse<const C extends ParserConfig>(
   return (argv: string[]): ParserResult<NormalizedParserConfig<C>, typeof type> => {
     // the read and parsedArgv doesn't need to pass on subsequent runs for command
     // its only necessary for the initial parser call
-    const rawArgv = type === "parser" ? read(argv) : argv
-    const parsedArgv =
+    let rawArgv = type === "parser" ? read(argv) : argv
+    let parsedArgv =
       type === "parser"
         ? settings.caseSensitive
           ? rawArgv
           : rawArgv.map((arg) => arg.toLowerCase())
         : rawArgv
+
+    // Expand shared dash patterns if sharedDash setting is enabled
+    // Only expand patterns that are flags-only (not options)
+    // Options will be handled specially in parseOption
+    if (settings.sharedDash && args) {
+      const expandedRawArgv: string[] = []
+      const expandedParsedArgv: string[] = []
+
+      for (let i = 0; i < rawArgv.length; i++) {
+        const rawArg = rawArgv[i]!
+        const parsedArg = parsedArgv[i]!
+
+        if (isSharedDashPattern(rawArg) && !containsOptions(parsedArg, args, settings)) {
+          // Expand the shared dash pattern (flags only)
+          const expandedRaw = expandSharedDash(rawArg, { ...settings, caseSensitive: true })
+          const expandedParsed = expandSharedDash(parsedArg, settings)
+
+          expandedRawArgv.push(...expandedRaw)
+          expandedParsedArgv.push(...expandedParsed)
+        } else {
+          expandedRawArgv.push(rawArg)
+          expandedParsedArgv.push(parsedArg)
+        }
+      }
+
+      rawArgv = expandedRawArgv
+      parsedArgv = expandedParsedArgv
+    }
     const detected = type === "parser" ? true : parsedArgv.includes(name)
 
     // Handle nested commands hierarchically:
@@ -137,6 +166,7 @@ export function createParse<const C extends ParserConfig>(
         path,
         baseOffset,
         searchStartIndex,
+        allArgs: args,
       })
       result.consumedIndices.forEach((index) => consumedIndices.add(index))
       const { consumedIndices: _, ...resultWithoutConsumedIndices } = result

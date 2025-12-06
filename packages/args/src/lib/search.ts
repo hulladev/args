@@ -11,6 +11,7 @@ import type {
 import { spread } from "@/util/arrays"
 import type { ZodTypeAny } from "zod"
 import { ParserError } from "./errors"
+import { isSharedDashPattern } from "./sharedDash"
 
 // Search for an argument by name
 export function search<
@@ -80,6 +81,23 @@ export function search<const C extends ParserConfig>(data: {
         searchFor.some((prefix) => currentArg.startsWith(`${prefix}=`))
       ) {
         return i
+      }
+
+      // If sharedDash is enabled, also check if this arg contains the short
+      if (settings.sharedDash && isSharedDashPattern(currentArg)) {
+        const shorts = spread(flagArg.short).map((s) =>
+          settings.caseSensitive ? s : s.toLowerCase(),
+        )
+        const chars = currentArg.slice(1).split("").map((c) =>
+          settings.caseSensitive ? c : c.toLowerCase(),
+        )
+
+        // Check if any of the shorts appears in the shared dash pattern
+        for (const short of shorts) {
+          if (chars.includes(short)) {
+            return i
+          }
+        }
       }
     }
     return -1

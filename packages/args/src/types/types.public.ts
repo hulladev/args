@@ -90,6 +90,7 @@ export type ParserSettingsInit = {
   mode?: "both" | "long" | "short"
   keepOnlyDetected?: boolean
   mergeArgs?: boolean
+  sharedDash?: boolean
 }
 
 export type ParserSettings = {

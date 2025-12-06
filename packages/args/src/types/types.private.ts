@@ -96,6 +96,7 @@ export type ValueParams<A extends Argument<string, ArgType, ZodTypeAny>> = {
   path: string
   baseOffset?: number
   searchStartIndex?: number // When mergeArgs is enabled, start searching from this index
+  allArgs?: Argument<string, ArgType, ZodTypeAny>[] // All arguments in the parser (needed for sharedDash)
 }
 
 // Function signature for parse functions
