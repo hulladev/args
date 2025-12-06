@@ -22,6 +22,7 @@ describe("basic parser", () => {
       requireEquals: false,
       mode: "both",
       keepOnlyDetected: false,
+      mergeArgs: false,
     })
   })
   test("read", () => {
