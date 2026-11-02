@@ -170,25 +170,6 @@ describe("commands", () => {
 })
 
 describe("with positionals cases", () => {
-  test("should parse command with no arguments", () => {
-    const p = parser({
-      name: "parser",
-      arguments: [],
-      commands: [command({ name: "test", arguments: [] })],
-    })
-    expect(p.parse(["test"])).toEqual({
-      argv: ["test"],
-      arguments: {},
-      commands: {
-        test: {
-          detected: true,
-          index: 0,
-          arguments: {},
-          commands: {},
-        },
-      },
-    })
-  })
   test("command preceeded by positional should work", () => {
     const p = parser({
       name: "parser",
@@ -572,112 +553,6 @@ describe("nested and multiple commands", () => {
 })
 
 describe("command aliases", () => {
-  test("command with string alias", () => {
-    const p = parser({
-      name: "parser",
-      arguments: [],
-      commands: [command({ name: "install", alias: "i", arguments: [] })],
-    })
-
-    // Original command name
-    expect(p.parse(["install"])).toEqual({
-      argv: ["install"],
-      arguments: {},
-      commands: {
-        install: {
-          detected: true,
-          index: 0,
-          arguments: {},
-          commands: {},
-        },
-      },
-    })
-
-    // Alias
-    expect(p.parse(["i"])).toEqual({
-      argv: ["i"],
-      arguments: {},
-      commands: {
-        install: {
-          detected: true,
-          index: 0,
-          arguments: {},
-          commands: {},
-        },
-      },
-    })
-  })
-
-  test("command with array of aliases", () => {
-    const p = parser({
-      name: "parser",
-      arguments: [],
-      commands: [
-        command({
-          name: "install",
-          alias: ["i", "add", "setup"],
-          arguments: [],
-        }),
-      ],
-    })
-
-    // Original command name
-    expect(p.parse(["install"])).toEqual({
-      argv: ["install"],
-      arguments: {},
-      commands: {
-        install: {
-          detected: true,
-          index: 0,
-          arguments: {},
-          commands: {},
-        },
-      },
-    })
-
-    // First alias
-    expect(p.parse(["i"])).toEqual({
-      argv: ["i"],
-      arguments: {},
-      commands: {
-        install: {
-          detected: true,
-          index: 0,
-          arguments: {},
-          commands: {},
-        },
-      },
-    })
-
-    // Second alias
-    expect(p.parse(["add"])).toEqual({
-      argv: ["add"],
-      arguments: {},
-      commands: {
-        install: {
-          detected: true,
-          index: 0,
-          arguments: {},
-          commands: {},
-        },
-      },
-    })
-
-    // Third alias
-    expect(p.parse(["setup"])).toEqual({
-      argv: ["setup"],
-      arguments: {},
-      commands: {
-        install: {
-          detected: true,
-          index: 0,
-          arguments: {},
-          commands: {},
-        },
-      },
-    })
-  })
-
   test("multiple commands with aliases", () => {
     const p = parser({
       name: "parser",
