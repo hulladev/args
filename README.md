@@ -88,6 +88,16 @@ $ ts-node cli.ts
 # Output: Hello, World!
 ```
 
+## AI agent guidance
+
+Install the [hulla-args skill](https://github.com/hulladev/skills/tree/main/skills/hulla-args) for package-specific guidance on argv handling, argument declarations, omitted input, validation, and nested commands:
+
+```sh
+npx skills add hulladev/skills --skill hulla-args
+```
+
+Choose your coding agent in the installer. See [installation and version compatibility](https://hulla.dev/docs/cli/agent-skills) before adding or updating skills in your application.
+
 ## 📚 Documentation
 
 For more detailed information and advanced usage, please visit the official documentation at **[hulla.dev/docs/args](https://hulla.dev/docs/args)**.
