@@ -13,6 +13,21 @@ try {
   const manifest = JSON.parse(await readFile("packages/args/package.json", "utf8"))
   run("pnpm", ["--dir", "packages/args", "pack", "--pack-destination", temporary], root)
   const archive = path.join(temporary, `hulla-args-${manifest.version}.tgz`)
+  const packed = JSON.parse(
+    execFileSync("tar", ["-xOf", archive, "package/package.json"], { encoding: "utf8" })
+  )
+  assert.equal(
+    packed.devDependencies,
+    undefined,
+    "Published packages must omit development-only workspace metadata"
+  )
+  const firstArchive = await readFile(archive)
+  run("pnpm", ["--dir", "packages/args", "pack", "--pack-destination", temporary], root)
+  assert.deepEqual(
+    await readFile(archive),
+    firstArchive,
+    "Packing the same build must produce identical bytes"
+  )
   for (const version of [3, 4]) {
     const consumer = path.join(temporary, `zod-${version}`)
     await mkdir(consumer)
