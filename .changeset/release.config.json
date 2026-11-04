@@ -1,0 +1,8 @@
+{
+  "repository": "hulladev/args",
+  "title": "@hulla/args",
+  "packageManager": "pnpm",
+  "packages": ["packages/args"],
+  "smokeImports": ["@hulla/args"],
+  "smokeDependencies": ["zod@^3"]
+}

@@ -8,16 +8,25 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
-    "check-types": "turbo run check-types"
+    "check-types": "turbo run check-types",
+    "changeset": "changeset",
+    "version:packages": "changeset version && node scripts/release.mjs prepare && pnpm install --lockfile-only --ignore-scripts && prettier --write .changeset/release-plan.json packages/args/package.json",
+    "test:release": "node --test scripts/release-checks.mjs",
+    "release:check": "pnpm lint && pnpm test && pnpm build && pnpm run test:release",
+    "release:pack": "node scripts/release.mjs pack",
+    "release:publish": "node scripts/release.mjs publish",
+    "release:verify": "node scripts/release.mjs verify",
+    "release": "node scripts/release.mjs publish"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.29.4",
+    "@changesets/cli": "3.0.3",
     "@repo/eslint-config": "workspace:*",
     "commitizen": "^4.3.1",
     "cz-emoji": "1.3.2-canary.2",
     "husky": "^9.1.7",
     "turbo": "^2.6.3",
-    "typescript": "5.8.2"
+    "typescript": "5.8.2",
+    "prettier": "^3.5.3"
   },
   "packageManager": "pnpm@10.24.0",
   "engines": {

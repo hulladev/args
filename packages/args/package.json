@@ -12,7 +12,7 @@
   "homepage": "https://hulla.dev/projects/args",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hulladev/args.git",
+    "url": "git+https://github.com/hulladev/args.git",
     "directory": "packages/args"
   },
   "files": [
@@ -47,5 +47,9 @@
   },
   "peerDependencies": {
     "zod": ">=3.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }
