@@ -1,7 +1,7 @@
-import type { ZodIssueCode } from "zod"
+import type { ZodIssue } from "zod"
 
 export type Code =
-  | ZodIssueCode
+  | ZodIssue["code"]
   | "missing_required_argument"
   | "ambiguous_arguments"
   | "banned_combined_arguments"
