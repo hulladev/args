@@ -1,5 +1,11 @@
 # @hulla/args
 
+## 0.0.6
+
+### Patch Changes
+
+- 074ff0f: Omit development-only workspace dependencies from the published manifest so repeated packing produces identical release artifacts.
+
 ## 0.0.5
 
 ### Patch Changes
