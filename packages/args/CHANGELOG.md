@@ -1,5 +1,12 @@
 # @hulla/args
 
+## 0.0.5
+
+### Patch Changes
+
+- 8fd9586: Normalize published package metadata and introduce coordinated release preparation with verified npm artifacts. GitHub Release announcements remain disabled by default.
+- 00f1753: Keep published parser error declarations compatible with both Zod 3 and Zod 4 by deriving issue codes from the issue type.
+
 ## 0.0.4
 
 ### Patch Changes

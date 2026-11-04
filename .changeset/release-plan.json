@@ -1,0 +1,12 @@
+{
+  "repository": "hulladev/args",
+  "version": "0.0.5",
+  "tag": "v0.0.5",
+  "packages": [
+    {
+      "name": "@hulla/args",
+      "version": "0.0.5",
+      "directory": "packages/args"
+    }
+  ]
+}
