@@ -37,39 +37,39 @@ Here's a simple example of how to define and parse command-line arguments.
 
 ```typescript
 // cli.ts
-import { parser, positional, flag, option } from '@hulla/args';
-import { z } from 'zod';
-import { argv } from 'node:process' // can use node/deno/bun or even custom input
+import { parser, positional, flag, option } from "@hulla/args"
+import { z } from "zod"
+import { argv } from "node:process" // can use node/deno/bun or even custom input
 
 const cli = parser({
-  name: 'my-app',
+  name: "my-app",
   arguments: [
     positional({
-      name: 'name',
-      description: 'The name to greet.',
-      schema: z.string().default('World'),
+      name: "name",
+      description: "The name to greet.",
+      schema: z.string().default("World"),
     }),
     option({
-      name: 'greeting',
-      description: 'The greeting to use.',
-      schema: z.string().default('Hello'),
+      name: "greeting",
+      description: "The greeting to use.",
+      schema: z.string().default("Hello"),
     }),
     flag({
-      name: 'yell',
-      description: 'Print the greeting in uppercase.',
-      short: 'y',
+      name: "yell",
+      description: "Print the greeting in uppercase.",
+      short: "y",
     }),
   ],
-}).parse(argv);
+}).parse(argv)
 
-const { name, greeting, yell } = cli.arguments;
-let message = `${greeting.value}, ${name.value}!`;
+const { name, greeting, yell } = cli.arguments
+let message = `${greeting.value}, ${name.value}!`
 
 if (yell.value) {
-  message = message.toUpperCase();
+  message = message.toUpperCase()
 }
 
-console.log(message);
+console.log(message)
 ```
 
 You can run this CLI from your terminal:
@@ -104,3 +104,6 @@ For more detailed information and advanced usage, please visit the official docu
 
 ---
 
+## Publishing
+
+See [the release workflow](docs/releasing.md) for changesets, version preparation, coordinated releases and npm trusted publishing.
